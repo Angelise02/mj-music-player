@@ -456,20 +456,18 @@
       else if (k === "r" || k === "R") repeatBtn.click();
     });
 
-    // Đĩa co theo tỉ lệ, có sàn → không bao giờ biến mất
-    let cdFull = 0;
+    // Đĩa co khi cuộn — dùng transform:scale() nên CHIỀU CAO dashboard không đổi.
+    // Trước đây đổi width khiến dashboard (sticky) đổi chiều cao theo scroll,
+    // làm scrollToActive() tính sai và bài đang phát bị che / trượt khỏi màn hình.
+    let cdFull = 1;
     const applyCd = () => {
-      if (!cdFull) return;
-      const p = Math.min(1, Math.max(0, window.scrollY / cdFull));
-      const scale = 1 - p * 0.55;
-      cd.style.width = Math.round(cdFull * scale) + "px";
-      cd.style.opacity = String(1 - p * 0.45);
+      const p = Math.min(1, Math.max(0, window.scrollY / Math.max(120, cdFull * 260)));
+      const scale = 1 - p * 0.5;
+      cd.style.transform = `scale(${scale.toFixed(3)})`;
+      cd.style.opacity = String(1 - p * 0.4);
     };
     const measureCd = () => {
-      const prev = cd.style.width;
-      cd.style.width = "";
       cdFull = cd.offsetWidth || 180;
-      cd.style.width = prev;
       applyCd();
     };
     measureCd();

@@ -105,12 +105,16 @@ header h2 {
   white-space: nowrap;
 }
 
-/* CD — kích thước co theo bề rộng màn hình */
+/* CD — kích thước co theo bề rộng màn hình.
+   QUAN TRỌNG: co bằng transform:scale() chứ KHÔNG đổi width.
+   Đổi width sẽ làm chiều cao dashboard (position:sticky) thay đổi theo scroll,
+   khiến logic canh bài đang phát không bao giờ khớp. transform không chiếm chỗ layout. */
 .cd {
   display: flex;
   margin: 0 auto;
   width: min(56vw, 210px);
-  transition: opacity 0.1s linear;
+  transform-origin: top center;
+  transition: transform 0.12s linear, opacity 0.12s linear;
 }
 
 .cd-thumb {
