@@ -18,13 +18,3 @@ desktop.ini
 # --- Editor ---
 .vscode/
 *.swp
-
-# --- KHONG commit nhac/anh co ban quyen ---
-# Bai goc cua nguoi co 27 file MP3 Michael Jackson + anh bo a
-music/
-img/
-*.mp3
-*.jpg
-*.jpeg
-*.png
-!audio/*.wav
