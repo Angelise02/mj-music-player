@@ -320,19 +320,16 @@
     play();
   };
 
+  // Dashboard position:sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
+  // Chiều cao dashboard giờ CỐ ĐỊNH (đĩa co bằng transform nên không đổi layout)
+  // → một lần tính là đủ, không cần vòng lặp.
   const scrollToActive = () => {
     const el = playlistEl.querySelector(".song.active");
     if (!el) return;
-    // Dashboard position:sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
-    // Chiều cao dashboard đã CỐ ĐỊNH (đĩa co bằng transform chứ không đổi width)
-    // nên một lần tính là đủ.
-    // Trước đây có nhiều setTimeout chồng nhau — bấm bài liên tiếp sẽ bị lượt cũ
-    // kéo ngược về vị trí bài trước đó.
     const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
-    const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
-    // "instant" chứ KHÔNG phải "auto": theo đặc tả, "auto" = dùng scroll-behavior của CSS
-    // mà ta đặt là smooth → trang trượt mượt, giữa lúc trượt dashboard bị lệch chỗ,
-    // bài đang phát nhấp nhô. "instant" mới thật sự nhảy tới ngay.
+    const top = window.scrollY + el.getBoundingClientRect().top - dashH - 12;
+    // "instant" chứ KHÔNG "auto": "auto" = dùng scroll-behavior của CSS (mượt)
+    // → sẽ để lại trạng thái lệch trong lúc trượt.
     window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
   };
 
@@ -457,20 +454,24 @@
     // Đĩa co khi cuộn — dùng transform:scale() nên CHIỀU CAO dashboard không đổi.
     // Trước đây đổi width khiến dashboard (sticky) đổi chiều cao theo scroll,
     // làm scrollToActive() tính sai và bài đang phát bị che / trượt khỏi màn hình.
-    let cdFull = 1;
-    const applyCd = () => {
-      const p = Math.min(1, Math.max(0, window.scrollY / Math.max(120, cdFull * 260)));
-      const scale = 1 - p * 0.5;
-      cd.style.transform = `scale(${scale.toFixed(3)})`;
-      cd.style.opacity = String(1 - p * 0.4);
-    };
-    const measureCd = () => {
-      cdFull = cd.offsetWidth || 180;
-      applyCd();
-    };
-    measureCd();
-    window.addEventListener("scroll", applyCd, { passive: true });
-    window.addEventListener("resize", measureCd);
+    // Đĩa co khi cuộn bằng TRANSFORM, không đụng layout.
+// Khoang .cd giữ kích thước cố định (xem style.css) nên chiều cao dashboard
+// không bao giờ đổi → nút điều khiển không bị đẩy, scrollToActive luôn khớp.
+// transform-origin: bottom center (CSS) nên đĩa co về phía nút, không hở lỗ hổng.
+let cdFull = 1;
+const applyCd = () => {
+  const range = Math.max(120, cdFull * 2.2); // cuộn ~2 lần bề ngang đĩa là co tối đa
+  const p = Math.min(1, Math.max(0, window.scrollY / range));
+  cdThumb.style.transform = `scale(${(1 - p * 0.45).toFixed(3)})`;
+  cdThumb.style.opacity = String(1 - p * 0.3);
+};
+const measureCd = () => {
+  cdFull = cd.offsetWidth || 156;
+  applyCd();
+};
+measureCd();
+window.addEventListener("scroll", applyCd, { passive: true });
+window.addEventListener("resize", measureCd);
   };
 
   const init = () => {

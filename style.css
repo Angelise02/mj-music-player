@@ -39,9 +39,9 @@ body {
 }
 
 .player {
-  max-width: 480px;
+  max-width: 360px;
   margin: 0 auto;
-  padding: 10px 12px calc(40px + env(safe-area-inset-bottom));
+  padding: 10px 10px calc(30px + env(safe-area-inset-bottom));
 }
 
 /*
@@ -64,9 +64,9 @@ body {
 /* ============ DASHBOARD ============ */
 .dashboard {
   position: sticky;
-  top: calc(10px + env(safe-area-inset-top));
+  top: calc(8px + env(safe-area-inset-top));
   z-index: 5;
-  padding: 16px 16px 14px;
+  padding: 12px 12px 10px;
   background-color: rgba(16, 16, 24, 0.82);
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -77,27 +77,27 @@ body {
 
 header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 header h4 {
   color: var(--primary);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 2.5px;
+  letter-spacing: 2px;
 }
 
 header h2 {
-  font-size: clamp(17px, 4.6vw, 21px);
+  font-size: clamp(15px, 4.2vw, 18px);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .now-artist {
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.62);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,22 +108,29 @@ header h2 {
    QUAN TRỌNG: co bằng transform:scale() chứ KHÔNG đổi width.
    Đổi width sẽ làm chiều cao dashboard (position:sticky) thay đổi theo scroll,
    khiến logic canh bài đang phát không bao giờ khớp. transform không chiếm chỗ layout. */
+/* CD — khoang chừa KỔ ĐỊNH, không bao giờ đổi chiều cao theo scroll.
+   Nếu chiều cao dashboard đổi khi cuộn thì các nút điều khiển bị đẩy lên,
+   người dùng bấm nhầm — và scrollToActive() cũng không bao giờ khớp.
+   Giữ khoang cố định, co đĩa bằng TRANSFORM.
+   transform-origin: bottom center → đĩa co về phía nút điều khiển nên không
+   hở lỗ hổng; khoảng trống luôn nằm ở phía trên. */
 .cd {
   display: flex;
   margin: 0 auto;
-  width: min(56vw, 210px);
-  transform-origin: top center;
-  transition: transform 0.12s linear, opacity 0.12s linear;
+  width: min(42vw, 156px);
+  height: min(42vw, 156px);
 }
 
 .cd-thumb {
   width: 100%;
-  padding-top: 100%;
+  height: 100%;
   border-radius: 50%;
   background-color: #222;
   background-size: cover;
   background-position: center;
   position: relative;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
   box-shadow:
     0 0 1.5em rgba(255, 255, 255, 0.2) inset,
     0 10px 30px rgba(0, 0, 0, 0.45);
@@ -147,7 +154,7 @@ header h2 {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 14px 0 8px;
+  padding: 10px 0 6px;
 }
 
 .btn {
@@ -155,13 +162,13 @@ header h2 {
   background: none;
   border: 0;
   color: #ddd;
-  /* Vùng chạm tối thiểu 48px cho ngón tay */
-  min-width: var(--tap);
-  min-height: var(--tap);
+  /* Vùng chạm tối thiểu 44px — nhỏ nhất còn dùng tay thoải mái */
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   transition: transform 0.16s var(--ease), color 0.16s var(--ease);
 }
@@ -171,15 +178,15 @@ header h2 {
 }
 
 .btn-toggle-play {
-  width: 68px;
-  height: 68px;
-  min-width: 68px;
-  min-height: 68px;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
   border-radius: 50%;
-  font-size: 26px;
+  font-size: 22px;
   color: #06222c;
   background: linear-gradient(145deg, #6fe3ff, var(--primary));
-  box-shadow: 0 8px 22px rgba(40, 202, 247, 0.42);
+  box-shadow: 0 6px 18px rgba(40, 202, 247, 0.4);
 }
 
 .icon-pause {
@@ -240,8 +247,7 @@ i.active {
   cursor: pointer;
   border-radius: 3px;
   flex: 1;
-  /* Cao hơn để dễ kéo bằng ngón tay */
-  height: 22px;
+  height: 18px;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -249,8 +255,8 @@ i.active {
 .progress::-webkit-slider-thumb,
 .volume::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #fff;
   border: 3px solid var(--primary);
@@ -278,7 +284,7 @@ i.active {
 .load-row {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .btn-load {
@@ -286,15 +292,15 @@ i.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: var(--tap);
-  padding: 10px 8px;
+  gap: 6px;
+  min-height: 42px;
+  padding: 8px 6px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 11px;
   background: var(--primary);
   color: #06222c;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.16s var(--ease), filter 0.16s var(--ease);
@@ -346,12 +352,20 @@ i.active {
   }
 }
 
+/* Gợi ý phím tắt — chỉ hiện trên màn hình rộng (bàn phím).
+   Trên điện thoại vô dụng và chiếm chỗ, nên ẩn đi cho gọn. */
 .hint {
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: center;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.55);
-  line-height: 1.9;
+  line-height: 1.8;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .hint {
+    display: none;
+  }
 }
 
 kbd {
@@ -366,17 +380,17 @@ kbd {
 
 /* ============ PLAYLIST ============ */
 .playlist {
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .song {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  padding: 8px 12px;
+  margin-bottom: 6px;
+  padding: 6px 10px;
   background-color: rgba(255, 255, 255, 0.07);
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.22s var(--ease), transform 0.22s var(--ease),
     border-color 0.22s var(--ease);
@@ -393,12 +407,12 @@ kbd {
 }
 
 .song .thumb {
-  width: 46px;
-  height: 46px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  margin-right: 12px;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
@@ -408,7 +422,7 @@ kbd {
 }
 
 .song .title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -416,7 +430,7 @@ kbd {
 }
 
 .song .author {
-  font-size: 11px;
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.6);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -468,8 +482,8 @@ kbd {
 
 /* ============ MÁY LỚN / BẢNG ============ */
 @media (min-width: 700px) {
-  .player { max-width: 560px; padding-top: 20px; }
-  .cd { width: 240px; }
+  .player { max-width: 400px; padding-top: 16px; }
+  .cd { width: 176px; }
 }
 
 /* ============ NGANG ============ */
