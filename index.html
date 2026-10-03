@@ -16,7 +16,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     />
-    <link rel="stylesheet" href="style.css" />
+    <!--
+      Gắn ?v= cho CSS/JS: GitHub Pages cache file tĩnh (Cache-Control: max-age=600).
+      Không có query này thì sửa code xong người dùng vẫn thấy bản cũ.
+      Nhớ TĂNG số mỗi lần sửa style.css / main.js.
+    -->
+    <link rel="stylesheet" href="style.css?v=2" />
   </head>
 
   <body>
@@ -117,6 +122,6 @@
 
     <audio id="audio" preload="metadata" playsinline></audio>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=2"></script>
   </body>
 </html>
