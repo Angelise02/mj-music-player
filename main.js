@@ -323,19 +323,14 @@
   const scrollToActive = () => {
     const el = playlistEl.querySelector(".song.active");
     if (!el) return;
-    // Dashboard position:sticky cao gần nửa màn hình, canh "center" sẽ bị dashboard che.
-    // Khó hơn: đĩa CD CO DẦN theo scrollY → chiều cao dashboard thay đổi TRONG LÚC đang
-    // cuộn mượt. Đo 1 lần rồi tính sẽ lệch, bài đang phát lọt vào vùng bị che.
-    // Cách sửa: cuộn tức thì rồi canh lại vài lần cho tới khi vị trí ổn định.
-    const place = () => {
-      const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
-      const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
-      window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
-    };
-    place();
-    requestAnimationFrame(() => requestAnimationFrame(place));
-    setTimeout(place, 60);
-    setTimeout(place, 220);
+    // Dashboard position:sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
+    // Chiều cao dashboard đã CỐ ĐỊNH (đĩa co bằng transform chứ không đổi width)
+    // nên một lần tính là đủ.
+    // Trước đây có nhiều setTimeout chồng nhau — bấm bài liên tiếp sẽ bị lượt cũ
+    // kéo ngược về vị trí bài trước đó.
+    const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
+    const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
+    window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
   };
 
   // ---------------- Sự kiện ----------------
