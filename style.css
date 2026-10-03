@@ -24,7 +24,6 @@
 html {
   box-sizing: border-box;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
 

@@ -330,7 +330,10 @@
     // kéo ngược về vị trí bài trước đó.
     const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
     const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
-    window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+    // "instant" chứ KHÔNG phải "auto": theo đặc tả, "auto" = dùng scroll-behavior của CSS
+    // mà ta đặt là smooth → trang trượt mượt, giữa lúc trượt dashboard bị lệch chỗ,
+    // bài đang phát nhấp nhô. "instant" mới thật sự nhảy tới ngay.
+    window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
   };
 
   // ---------------- Sự kiện ----------------
