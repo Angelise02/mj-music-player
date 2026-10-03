@@ -16,7 +16,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     />
-    <link rel="stylesheet" href="style.css" />
+    <!--
+      Gắn ?v= cho CSS/JS: GitHub Pages cache file tĩnh (Cache-Control: max-age=600).
+      Không có query này thì sửa code xong người dùng vẫn thấy bản cũ.
+      Nhớ TĂNG số mỗi lần sửa style.css / main.js.
+    -->
+    <link rel="stylesheet" href="style.css?v=5" />
   </head>
 
   <body>
@@ -101,7 +106,7 @@
           </button>
           <button class="btn-load btn-ghost" id="btnDemo">
             <i class="fas fa-music"></i>
-            <span>Về bản demo</span>
+            <span>Về 27 bài MJ</span>
           </button>
         </div>
 
@@ -117,6 +122,6 @@
 
     <audio id="audio" preload="metadata" playsinline></audio>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=5"></script>
   </body>
 </html>

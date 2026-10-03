@@ -45,7 +45,38 @@
 
   const STORAGE_KEY = "MJ-PLAYER-V1";
 
-  // Bài demo tự sinh — không có bản quyền
+  // 27 bài Michael Jackson kèm ảnh album
+  const CATALOG = [
+    ["Remember The Time", "Michael Jackson", "music/remember_the_time.mp3", "img/remember_the_time.jpg"],
+    ["Beat It", "Michael Jackson", "music/beat_it.mp3", "img/beat_it.jpg"],
+    ["Billie Jean", "Michael Jackson", "music/billie_jean.mp3", "img/billie_jean.jpg"],
+    ["Black Or White", "Michael Jackson", "music/black_or_white.mp3", "img/black_or_white.jpg"],
+    ["Don't Stop Til You Get Enough", "Michael Jackson", "music/dont_stop_til_you_get_enough.mp3", "img/dont_stop_til_you_get_enough.jpg"],
+    ["Human Nature", "Michael Jackson", "music/human_nature.mp3", "img/human_nature.jpg"],
+    ["Man In The Mirror", "Michael Jackson", "music/man_in_the_mirror.mp3", "img/man_in_the_mirror.jpg"],
+    ["Rock With You", "Michael Jackson", "music/rock_with_you.mp3", "img/rock_with_you.jpg"],
+    ["Smooth Criminal", "Michael Jackson", "music/smooth_criminal.mp3", "img/smooth_criminal.jpg"],
+    ["You Rock My World", "Michael Jackson", "music/you_rock_my_world.mp3", "img/you_rock_my_world.jpg"],
+    ["Thriller", "Michael Jackson", "music/thriller.mp3", "img/thriller.jpg"],
+    ["Butterflies", "Michael Jackson", "music/butterflies.mp3", "img/background2.jpg"],
+    ["Unbreakable", "Michael Jackson", "music/unbreakable.mp3", "img/invincible.jpg"],
+    ["Heaven Can Wait", "Michael Jackson", "music/heaven_can_wait.mp3", "img/background3.jpg"],
+    ["2000 Watts", "Michael Jackson", "music/2000_watts.mp3", "img/invincible.jpg"],
+    ["Break of Dawn", "Michael Jackson", "music/break_of_dawn.mp3", "img/background.jpg"],
+    ["The Way You Make Me Feel", "Michael Jackson", "music/the_way_you_make_me_feel.mp3", "img/the_way_you_make_me_feel.jpg"],
+    ["They Don't Care About Us", "Michael Jackson", "music/they_dont_care_about_us.mp3", "img/they_dont_care_about_us.jpg"],
+    ["Stranger In Moscow", "Michael Jackson", "music/stranger_in_moscow.mp3", "img/stranger_in_moscow.jpg"],
+    ["Who Is It", "Michael Jackson", "music/who_is_it.mp3", "img/who_is_it.jpg"],
+    ["You Are Not Alone", "Michael Jackson", "music/you_are_not_alone.mp3", "img/you_are_not_alone.jpg"],
+    ["Liberian Girl", "Michael Jackson", "music/liberian_girl.mp3", "img/liberian_girl.jpg"],
+    ["In The Closet", "Michael Jackson", "music/in_the_closet.mp3", "img/in_the_closet.jpg"],
+    ["Love Never Felt So Good", "Michael Jackson", "music/love_never_felt_so_good.mp3", "img/love_never_felt_so_good.png"],
+    ["Give In To Me", "Michael Jackson", "music/give_in_to_me.mp3", "img/give_in_to_me.jpg"],
+    ["Leave Me Alone", "Michael Jackson", "music/leave_me_alone.mp3", "img/leave_me_alone.jpg"],
+    ["Blood On The Dance Floor", "Michael Jackson", "music/blood_on_the_dance_floor.mp3", "img/blood_on_the_dance_floor.jpg"],
+  ];
+
+  // Bài demo tự sinh — dùng khi người dùng muốn xoá nhạc đi và nạp nhạc của mình
   const DEMO = [
     ["Aurora", "Demo · tự sinh", "audio/aurora.wav", "#2b6cb0"],
     ["Midnight", "Demo · tự sinh", "audio/midnight.wav", "#6b46c1"],
@@ -76,13 +107,23 @@
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   };
 
+  const loadCatalog = () => {
+    revokeUrls();
+    songs = CATALOG.map(([name, artist, path, image]) => ({ name, artist, path, image }));
+    currentIndex = 0;
+    history = [];
+    bindLibrary();
+    loadCurrentSong();
+    renderPlaylist();
+    clearError();
+  };
+
   const loadDemo = () => {
     revokeUrls();
     songs = DEMO.map(([name, artist, path, color], i) => ({
       name,
       artist,
       path,
-      color,
       image: makeCover(i + 1, color),
     }));
     currentIndex = 0;
@@ -90,6 +131,7 @@
     bindLibrary();
     loadCurrentSong();
     renderPlaylist();
+    scrollToActive();
     clearError();
   };
 
@@ -281,12 +323,17 @@
   const scrollToActive = () => {
     const el = playlistEl.querySelector(".song.active");
     if (!el) return;
-    // Dashboard sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
+    // Dashboard position:sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
+    // Chiều cao dashboard đã CỐ ĐỊNH (đĩa co bằng transform chứ không đổi width)
+    // nên một lần tính là đủ.
+    // Trước đây có nhiều setTimeout chồng nhau — bấm bài liên tiếp sẽ bị lượt cũ
+    // kéo ngược về vị trí bài trước đó.
     const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
-    window.scrollTo({
-      top: Math.max(0, window.scrollY + el.getBoundingClientRect().top - dashH - 14),
-      behavior: "smooth",
-    });
+    const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
+    // "instant" chứ KHÔNG phải "auto": theo đặc tả, "auto" = dùng scroll-behavior của CSS
+    // mà ta đặt là smooth → trang trượt mượt, giữa lúc trượt dashboard bị lệch chỗ,
+    // bài đang phát nhấp nhô. "instant" mới thật sự nhảy tới ngay.
+    window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
   };
 
   // ---------------- Sự kiện ----------------
@@ -389,8 +436,7 @@
       fileInput.value = "";
     });
     btnDemo.addEventListener("click", () => {
-      loadDemo();
-      play();
+      loadCatalog();
     });
 
     // Phím tắt (có bàn phím/nối USB)
@@ -408,20 +454,18 @@
       else if (k === "r" || k === "R") repeatBtn.click();
     });
 
-    // Đĩa co theo tỉ lệ, có sàn → không bao giờ biến mất
-    let cdFull = 0;
+    // Đĩa co khi cuộn — dùng transform:scale() nên CHIỀU CAO dashboard không đổi.
+    // Trước đây đổi width khiến dashboard (sticky) đổi chiều cao theo scroll,
+    // làm scrollToActive() tính sai và bài đang phát bị che / trượt khỏi màn hình.
+    let cdFull = 1;
     const applyCd = () => {
-      if (!cdFull) return;
-      const p = Math.min(1, Math.max(0, window.scrollY / cdFull));
-      const scale = 1 - p * 0.55;
-      cd.style.width = Math.round(cdFull * scale) + "px";
-      cd.style.opacity = String(1 - p * 0.45);
+      const p = Math.min(1, Math.max(0, window.scrollY / Math.max(120, cdFull * 260)));
+      const scale = 1 - p * 0.5;
+      cd.style.transform = `scale(${scale.toFixed(3)})`;
+      cd.style.opacity = String(1 - p * 0.4);
     };
     const measureCd = () => {
-      const prev = cd.style.width;
-      cd.style.width = "";
       cdFull = cd.offsetWidth || 180;
-      cd.style.width = prev;
       applyCd();
     };
     measureCd();
@@ -433,7 +477,7 @@
     loadConfig();
     audio.volume = Number(volume.value);
     updateVolIcon();
-    loadDemo();       // luôn bắt đầu bằng 3 bài demo
+    loadCatalog();     // mở lên là có đủ 27 bài
     renderToggles();
     bindEvents();
     saveConfig();
