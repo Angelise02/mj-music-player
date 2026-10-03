@@ -1,0 +1,436 @@
+/* ==========================================================
+   Music Player — bản Android
+   Tương thích mọi kích thước: dùng rem/clamp, không khoá px cứng.
+   Có padding safe-area để không bị che bởi notch / thanh trạng thái.
+   ========================================================== */
+
+:root {
+  --primary: #28caf7;
+  --primary-soft: rgba(40, 202, 247, 0.5);
+  --glass-2: rgba(255, 255, 255, 0.14);
+  --radius: 16px;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --tap: 48px; /* vùng chạm tối thiểu chuẩn Android */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% -10%, #1a2740 0%, #0b0b12 55%);
+  background-attachment: fixed;
+  color: #fff;
+  /* Chừa chỗ cho notch + thanh điều hướng trên mọi thiết bị */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overscroll-behavior-y: contain;
+}
+
+.player {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 10px 12px calc(40px + env(safe-area-inset-bottom));
+}
+
+/* ============ DASHBOARD ============ */
+.dashboard {
+  position: sticky;
+  top: calc(10px + env(safe-area-inset-top));
+  z-index: 5;
+  padding: 16px 16px 14px;
+  background-color: rgba(16, 16, 24, 0.82);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--glass-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+header h4 {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+}
+
+header h2 {
+  font-size: clamp(17px, 4.6vw, 21px);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.now-artist {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.62);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* CD — kích thước co theo bề rộng màn hình */
+.cd {
+  display: flex;
+  margin: 0 auto;
+  width: min(56vw, 210px);
+  transition: opacity 0.1s linear;
+}
+
+.cd-thumb {
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 50%;
+  background-color: #222;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  box-shadow:
+    0 0 1.5em rgba(255, 255, 255, 0.2) inset,
+    0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.cd-thumb::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18%;
+  height: 18%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(18, 18, 22, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+/* ============ CONTROLS ============ */
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 14px 0 8px;
+}
+
+.btn {
+  position: relative;
+  background: none;
+  border: 0;
+  color: #ddd;
+  /* Vùng chạm tối thiểu 48px cho ngón tay */
+  min-width: var(--tap);
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.btn:active {
+  transform: scale(0.92);
+}
+
+.btn-toggle-play {
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  border-radius: 50%;
+  font-size: 26px;
+  color: #06222c;
+  background: linear-gradient(145deg, #6fe3ff, var(--primary));
+  box-shadow: 0 8px 22px rgba(40, 202, 247, 0.42);
+}
+
+.icon-pause {
+  display: none;
+}
+
+.player.playing .icon-pause {
+  display: block;
+}
+
+.player.playing .icon-play {
+  display: none;
+}
+
+.btn.active,
+i.active {
+  color: var(--primary);
+}
+
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: var(--primary);
+  color: #06222c;
+  font-size: 9px;
+  font-weight: 700;
+  font-style: normal;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  border-radius: 50%;
+}
+
+/* ============ THANH TRƯỢC ============ */
+.progress-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 4px;
+}
+
+.time {
+  color: var(--primary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  min-width: 42px;
+}
+
+.progress,
+.volume {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.26);
+  outline: none;
+  cursor: pointer;
+  border-radius: 3px;
+  flex: 1;
+  /* Cao hơn để dễ kéo bằng ngón tay */
+  height: 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.progress::-webkit-slider-thumb,
+.volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.volume::-webkit-slider-thumb {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.volume-div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.btn-mute {
+  min-width: 42px;
+  padding: 0;
+}
+
+/* ============ NÚT NẠP NHẠC ============ */
+.load-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-load {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #06222c;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.16s var(--ease), filter 0.16s var(--ease);
+}
+
+.btn-load:active {
+  transform: scale(0.96);
+  filter: brightness(0.9);
+}
+
+.btn-ghost {
+  background: var(--glass-2);
+  color: #fff;
+}
+
+/* ============ LỖI & GỢI Ý ============ */
+.error-msg {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 90, 90, 0.18);
+  border: 1px solid rgba(255, 90, 90, 0.45);
+  color: #ffd7d7;
+  font-size: 12px;
+  text-align: center;
+}
+
+.hint {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.9;
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: inherit;
+  font-size: 10px;
+}
+
+/* ============ PLAYLIST ============ */
+.playlist {
+  margin-top: 14px;
+}
+
+.song {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.22s var(--ease), transform 0.22s var(--ease),
+    border-color 0.22s var(--ease);
+}
+
+.song:active {
+  transform: scale(0.99);
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.song.active {
+  background-color: var(--primary-soft);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.song .thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.song .body {
+  flex: 1;
+  min-width: 0;
+}
+
+.song .title {
+  font-size: 15px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song .author {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Equalizer nhảy ở bài đang phát */
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.eq span {
+  width: 3px;
+  height: 28%;
+  background: #fff;
+  border-radius: 2px;
+}
+
+.player.playing .song.active .eq span {
+  animation: eq 0.9s ease-in-out infinite;
+}
+
+.eq span:nth-child(2) { animation-delay: 0.15s; }
+.eq span:nth-child(3) { animation-delay: 0.3s; }
+.eq span:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes eq {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ============ MÁY NHỎ ============ */
+@media (max-width: 360px) {
+  .player { padding: 8px 8px 30px; }
+  .dashboard { padding: 12px 12px 10px; }
+  .btn-toggle-play { width: 60px; height: 60px; min-width: 60px; min-height: 60px; }
+  .hint { display: none; }
+  .btn-load span { font-size: 12px; }
+}
+
+/* ============ MÁY LỚN / BẢNG ============ */
+@media (min-width: 700px) {
+  .player { max-width: 560px; padding-top: 20px; }
+  .cd { width: 240px; }
+}
+
+/* ============ NGANG ============ */
+@media (orientation: landscape) and (max-height: 520px) {
+  .dashboard { padding: 10px 14px; }
+  .cd { width: min(30vw, 130px); }
+  .hint { display: none; }
+}

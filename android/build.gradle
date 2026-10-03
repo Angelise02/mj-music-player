@@ -1,0 +1,8 @@
+// Build cấu hình cho MỌI dòng Android:
+// - minSdk 21  : Android 5.0 trở lên → gần 100% thiết bị
+// - compileSdk/targetSdk 35 : Android 15
+// - Không khoá hướng màn hình, resizeableActivity = true → chạy được trên
+//   điện thoại, máy tính bảng, máy gập, chế độ nhiều cửa sổ
+plugins {
+    id 'com.android.application' version '8.7.3' apply false
+}

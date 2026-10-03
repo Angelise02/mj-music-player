@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.mjplayer'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.mjplayer"
+        minSdk 21            // Android 5.0+
+        targetSdk 35         // Android 15
+        versionCode 1
+        versionName "1.0"
+        // Không cần bất kỳ quyền nào: người dùng tự chọn nhạc qua trình chọn tệp
+    }
+
+    buildTypes {
+        debug {
+            // APK debug đã tự ký bằng khóa debug → cài được ngay
+        }
+        release {
+            minifyEnabled false
+            // Ký bằng khóa debug để người dùng cài được ngay mà không cần tạo keystore
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // WAV/MP3 đã nén sẵn, không nén lại lần nữa để phát nhanh
+    androidResources {
+        noCompress 'wav', 'mp3', 'ogg'
+    }
+
+    // Tên file tiếng Việt/khoảng trắng trong assets giữ nguyên
+    aaptOptions {
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*~'
+    }
+}
+
+dependencies {
+    // Dùng WebViewAssetLoader để phục vụ assets qua https:// thay vì file://
+    // → origin thật nên localStorage, blob: và <input type="file"> hoạt động ổn định
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.annotation:annotation:1.8.2'
+}

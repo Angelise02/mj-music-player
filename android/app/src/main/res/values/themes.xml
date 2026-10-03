@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Edge-to-edge:
+      - windowOptOutEdgeToEdgeEnforcement: Android 15 ép edge-to-edge khi targetSdk 35.
+        Ta chọn opt-out để nội dung không bị đè bởi thanh trạng thái trên MỌI thiết bị
+        (an toàn hơn so với tự tính inset trên từng hãng).
+      - windowLightStatusBar=false: nền tối, icon trạng thái phải sáng.
+      - Web app vẫn có padding env(safe-area-inset-*) nên nếu thiết bị nào vẫn
+        bật edge-to-edge thì nội dung vẫn không bị che.
+    -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>

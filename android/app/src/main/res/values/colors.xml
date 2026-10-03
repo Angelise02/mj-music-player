@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nền tối khớp với background của web app để không nháy trắng khi mở -->
+    <color name="bg">#0B0B12</color>
+    <color name="brand">#28CAF7</color>
+</resources>
