@@ -45,6 +45,23 @@ body {
   padding: 10px 12px calc(40px + env(safe-area-inset-bottom));
 }
 
+/*
+  Dashboard position:sticky tụt 10px dưới đỉnh → khe hở 10px ở trên.
+  Bài hát cuộn lên sẽ lọt vào khe đó và bị cắt cụt, trông như lỗi render.
+  Lớp phủ này dùng ĐÚNG nền của body nên liền mạch, không thấy đường nối.
+*/
+.player::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(34px + env(safe-area-inset-top));
+  background: radial-gradient(circle at 50% -10%, #1a2740 0%, #0b0b12 55%);
+  z-index: 4;
+  pointer-events: none;
+}
+
 /* ============ DASHBOARD ============ */
 .dashboard {
   position: sticky;

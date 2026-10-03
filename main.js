@@ -323,12 +323,19 @@
   const scrollToActive = () => {
     const el = playlistEl.querySelector(".song.active");
     if (!el) return;
-    // Dashboard sticky cao gần nửa màn hình; canh "center" sẽ bị dashboard che.
-    const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
-    window.scrollTo({
-      top: Math.max(0, window.scrollY + el.getBoundingClientRect().top - dashH - 14),
-      behavior: "smooth",
-    });
+    // Dashboard position:sticky cao gần nửa màn hình, canh "center" sẽ bị dashboard che.
+    // Khó hơn: đĩa CD CO DẦN theo scrollY → chiều cao dashboard thay đổi TRONG LÚC đang
+    // cuộn mượt. Đo 1 lần rồi tính sẽ lệch, bài đang phát lọt vào vùng bị che.
+    // Cách sửa: cuộn tức thì rồi canh lại vài lần cho tới khi vị trí ổn định.
+    const place = () => {
+      const dashH = document.querySelector(".dashboard").getBoundingClientRect().height;
+      const top = window.scrollY + el.getBoundingClientRect().top - dashH - 14;
+      window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+    };
+    place();
+    requestAnimationFrame(() => requestAnimationFrame(place));
+    setTimeout(place, 60);
+    setTimeout(place, 220);
   };
 
   // ---------------- Sự kiện ----------------
